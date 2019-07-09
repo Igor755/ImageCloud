@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "371015302000",
+    "firebase_url": "https://imagecloud-d52a6.firebaseio.com",
+    "project_id": "imagecloud-d52a6",
+    "storage_bucket": "imagecloud-d52a6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:371015302000:android:28553d1dcc20b6c5",
+        "android_client_info": {
+          "package_name": "com.image.imagecloud"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "371015302000-mcrroo8nn9uuhgehtdad6f33t0e5u595.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAtXScWct4YYvZixvlVhP-tFHaWV9fBouA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "371015302000-mcrroo8nn9uuhgehtdad6f33t0e5u595.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
