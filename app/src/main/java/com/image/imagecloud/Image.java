@@ -1,0 +1,28 @@
+package com.image.imagecloud;
+
+public class Image {
+
+    private String uri;
+    private String name;
+
+    public Image(String uri, String name) {
+        this.uri = uri;
+        this.name = name;
+    }
+
+    public String getUri() {
+        return uri;
+    }
+
+    public void setUri(String uri) {
+        this.uri = uri;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String namel) {
+        this.name = namel;
+    }
+}
