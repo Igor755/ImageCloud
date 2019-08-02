@@ -28,6 +28,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 
 public class Proba extends AppCompatActivity {
@@ -76,11 +77,9 @@ public class Proba extends AppCompatActivity {
 
             }
         });
-
-        mAuth = FirebaseAuth.getInstance();
+       /* mAuth = FirebaseAuth.getInstance();
         FirebaseDatabase database = FirebaseDatabase.getInstance();
-        Query myRef = database.getReference("Places").orderByChild("uid").equalTo(mAuth.getCurrentUser().getUid());
-
+        Query myRef = database.getReference("Places").orderByChild("uid").equalTo(Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
 
         myRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
@@ -88,23 +87,19 @@ public class Proba extends AppCompatActivity {
 
                 for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
 
-                   /*Places place_information = dataSnapshot1.getValue(Places.class);
+                   *//*Places place_information = dataSnapshot1.getValue(Places.class);
                     alldataplaces.add(place_information);
-                    System.out.println(place_information);*/
+                    System.out.println(place_information);*//*
 
                 }
                 System.out.println("25");
-
-
             }
-
-
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 throw databaseError.toException();
             }
         });
-
+*/
 
 
 
@@ -159,11 +154,7 @@ public class Proba extends AppCompatActivity {
                         }
                     });
         }
-
     }
-
-
-
 }
 
 
