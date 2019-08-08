@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "371015302000-hsfraedl24s1f2chd5lnncluruqq5s1u.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.image.imagecloud",
+            "certificate_hash": "fcd94b9e24467a8c8d49e482c5860cafadb98672"
+          }
+        },
+        {
           "client_id": "371015302000-mcrroo8nn9uuhgehtdad6f33t0e5u595.apps.googleusercontent.com",
           "client_type": 3
         }

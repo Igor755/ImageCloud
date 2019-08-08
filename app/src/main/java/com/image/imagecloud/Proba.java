@@ -1,13 +1,16 @@
 package com.image.imagecloud;
 
 import android.app.ProgressDialog;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -16,9 +19,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
@@ -26,20 +31,22 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
 
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
 
 public class Proba extends AppCompatActivity {
-    private FirebaseStorage firebaseStorage;
-    private StorageReference storageReference;
+
+    private StorageReference firebaseStorage;
+    private DatabaseReference databaseReference;
 
     private final int PICK_IMAGE_REQUEST = 71;
     private Uri filePath;
     private ImageView imageView;
-
-    private FirebaseAuth mAuth;
+    private EditText edit_name;
+    private Button btnshow;
 
 
     @Override
@@ -50,9 +57,11 @@ public class Proba extends AppCompatActivity {
         imageView = (ImageView) findViewById(R.id.imageView);
         Button button = findViewById(R.id.btn);
         Button button2 = findViewById(R.id.btn2);
+        edit_name = (EditText) findViewById(R.id.edit_name);
+        btnshow = (Button) findViewById(R.id.btnshow);
 
-        firebaseStorage = FirebaseStorage.getInstance();
-        storageReference = firebaseStorage.getReference();
+        firebaseStorage = FirebaseStorage.getInstance().getReference("images");
+        databaseReference = FirebaseDatabase.getInstance().getReference("images");
 
        /*Glide.with(this)
                 .load(storageReference)
@@ -77,29 +86,18 @@ public class Proba extends AppCompatActivity {
 
             }
         });
-       /* mAuth = FirebaseAuth.getInstance();
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        Query myRef = database.getReference("Places").orderByChild("uid").equalTo(Objects.requireNonNull(mAuth.getCurrentUser()).getUid());
-
-        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+        btnshow.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onClick(View v) {
 
-                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                startActivity(intent);
 
-                   *//*Places place_information = dataSnapshot1.getValue(Places.class);
-                    alldataplaces.add(place_information);
-                    System.out.println(place_information);*//*
 
-                }
-                System.out.println("25");
-            }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                throw databaseError.toException();
+
+
             }
         });
-*/
 
 
 
@@ -107,20 +105,24 @@ public class Proba extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
-                && data != null && data.getData() != null )
-        {
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null) {
+
             filePath = data.getData();
-            try {
-                Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), filePath);
-                imageView.setImageBitmap(bitmap);
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-            }
+            Picasso.get().load(filePath).into(imageView);
+            imageView.setImageURI(filePath);
+
         }
     }
+
+
+    private String getFileExtension(Uri uri){
+        ContentResolver contentResolver = getContentResolver();
+        MimeTypeMap mimeTypeMap = MimeTypeMap.getSingleton();
+        return mimeTypeMap.getExtensionFromMimeType(contentResolver.getType(uri));
+    }
+
+
     public void infirebase(){
 
         if(filePath != null)
@@ -129,13 +131,31 @@ public class Proba extends AppCompatActivity {
             progressDialog.setTitle("Uploading...");
             progressDialog.show();
 
-            StorageReference ref = storageReference.child("images/"+ UUID.randomUUID().toString());
+            final StorageReference ref = firebaseStorage.child(UUID.randomUUID() + "." + getFileExtension(filePath));
             ref.putFile(filePath)
                     .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                         @Override
                         public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
                             progressDialog.dismiss();
-                            Toast.makeText(Proba.this, "Uploaded", Toast.LENGTH_SHORT).show();
+
+                            ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                                @Override
+                                public void onSuccess(Uri uri) {
+
+                                    Toast.makeText(Proba.this, "Uploaded", Toast.LENGTH_SHORT).show();
+                                    Image image = new Image (edit_name.getText().toString().trim(),uri.toString());//getDownloadUrl
+                                    String uploadId = databaseReference.push().getKey();
+                                    databaseReference.child(uploadId).setValue(image);
+
+                                }
+                            });
+
+
+
+
+
+
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -153,6 +173,8 @@ public class Proba extends AppCompatActivity {
                             progressDialog.setMessage("Uploaded "+(int)progress+"%");
                         }
                     });
+        }else {
+            Toast.makeText(this, "No file selected", Toast.LENGTH_SHORT).show();
         }
     }
 }
